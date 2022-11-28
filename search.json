@@ -86,9 +86,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "quartoBlog",
+    "title": "recent posts",
     "section": "",
-    "text": "Sharing matrix data between OpenFrameworks and Julia\n\n\n\n\n\n\n\nJulia\n\n\nOpenFrameworks\n\n\nMemory\n\n\nPOSIX\n\n\n\n\nUsing the POSIX shared memory API to allow shared access to swarm data\n\n\n\n\n\n\nMar 15, 2022\n\n\n\n\n\n\n\n\nDimension reduction of the latent space\n\n\n\n\n\n\n\ndimension reduction\n\n\nauto-encoder\n\n\nswarm\n\n\n\n\nFrom a latent space to musical parameters\n\n\n\n\n\n\nFeb 28, 2022\n\n\nMax Worgan\n\n\n\n\n\n\n\n\nDeep Convolutional Auto Encoders - Part 2\n\n\n\n\n\n\n\ndimension reduction\n\n\nauto-encoder\n\n\nswarm\n\n\n\n\nAdaptation to encode entire swarm\n\n\n\n\n\n\nFeb 6, 2022\n\n\nMax Worgan\n\n\n\n\n\n\n\n\nDeep Convolutional Auto Encoders - Part 1\n\n\n\n\n\n\n\ndimension reduction\n\n\nauto-encoder\n\n\nswarm\n\n\n\n\nReimplementing DCAE to encode agent swarm flight\n\n\n\n\n\n\nJan 14, 2022\n\n\nMax Worgan\n\n\n\n\n\n\nNo matching items"
+    "text": "Sharing matrix data between OpenFrameworks and Julia\n\n\n\n\n\n\n\nJulia\n\n\nOpenFrameworks\n\n\nMemory\n\n\nPOSIX\n\n\n\n\nUsing the POSIX shared memory API to allow shared access to swarm data\n\n\n\n\n\n\nMar 15, 2022\n\n\nMax Worgan\n\n\n\n\n\n\n\n\nDimension reduction of the latent space\n\n\n\n\n\n\n\ndimension reduction\n\n\nauto-encoder\n\n\nswarm\n\n\n\n\nFrom a latent space to musical parameters\n\n\n\n\n\n\nFeb 28, 2022\n\n\nMax Worgan\n\n\n\n\n\n\n\n\nDeep Convolutional Auto Encoders - Part 2\n\n\n\n\n\n\n\ndimension reduction\n\n\nauto-encoder\n\n\nswarm\n\n\n\n\nAdaptation to encode entire swarm\n\n\n\n\n\n\nFeb 6, 2022\n\n\nMax Worgan\n\n\n\n\n\n\n\n\nDeep Convolutional Auto Encoders - Part 1\n\n\n\n\n\n\n\ndimension reduction\n\n\nauto-encoder\n\n\nswarm\n\n\n\n\nReimplementing DCAE to encode agent swarm flight\n\n\n\n\n\n\nJan 14, 2022\n\n\nMax Worgan\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
