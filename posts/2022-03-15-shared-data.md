@@ -7,6 +7,7 @@ categories:
 - Memory
 - POSIX
 date: '2022-03-15'
+author: Max Worgan
 description: Using the POSIX shared memory API to allow shared access to swarm data
 layout: post
 title: Sharing matrix data between OpenFrameworks and Julia
