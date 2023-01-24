@@ -1,6 +1,7 @@
 ---
 title: "Deep Convolutional Variational Auto Encoders"
 format: html
+image: images/Reparameterized_Variational_Autoencoder.jpg
 author: Max Worgan
 categories:
 - dimension reduction
@@ -221,7 +222,7 @@ Successful Training
 The above charts have been smoothed to show the general trend. As can be seen the training loss is moving the correct direction, and the KL no longer vanishes to 0!
 
 
-
 [^1]: See their blog <https://orybkin.github.io/sigma-vae/> for details
+
 
 
