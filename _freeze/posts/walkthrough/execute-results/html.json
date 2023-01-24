@@ -1,0 +1,11 @@
+{
+  "hash": "9c8d7054f2396656095df979c20a0631",
+  "result": {
+    "markdown": "---\ntitle: 'Hello, Quarto'\nformat: html\ncode-fold: true\n---\n\n## Variational Autoencoders\n\nHere's some intro about variations auto encoders\n\nmaybe some math\n\n## Code Cell\n\nHere is a Julia code cell:\n\n::: {.cell execution_count=1}\n``` {.julia .cell-code}\nprintln(\"yeah bitch\")\n```\n\n::: {.cell-output .cell-output-stdout}\n```\nyeah bitch\n```\n:::\n:::\n\n\n## Equation\n\nUse LaTeX to write equations:\n\n$$\n\\chi' = \\sum_{i=1}^n \\frac{k_i}{\\mu} s_i^2\n$$\n\n",
+    "supporting": [
+      "walkthrough_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}
