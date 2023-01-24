@@ -1,6 +1,6 @@
 ---
 title: "About"
-image: profile.jpg
+image: ulam.png
 about:
   template: jolla
   links:
@@ -10,4 +10,4 @@ about:
 
 ---
 
-About this blog
+ This is a place for me to document technical research in the course of my PhD.
