@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Max Worgan">
+<meta name="dcterms.date" content="2022-11-18">
+<meta name="description" content="Adapting the autoencoder to use variational inference">
+
+<title>Max Worgan’s PhD research blog - Deep Convolutional Variational Auto Encoders</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Max Worgan’s PhD research blog</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/MaxWorgan"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Deep Convolutional Variational Auto Encoders</h1>
+                  <div>
+        <div class="description">
+          Adapting the autoencoder to use variational inference
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">dimension reduction</div>
+                <div class="quarto-category">variational auto-encoder</div>
+                <div class="quarto-category">swarm</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Max Worgan </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">November 18, 2022</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>Currently the autoencoder manages to reduce the 54000 datapoints (300 agents, in 3D space, over 60 timesteps = <span class="math inline">\(300 \times 3 \times 60 = 54000\)</span>) down to 100 dimensions which a surprising amount of accuracy. But there are several drawbacks to the current approach.</p>
+<p>Firstly, 100 values is still too many to use in composition, and secondly it’s very hard to come up with an intuative understanding of <em>what</em> the encoded variables represent.</p>
+<p>For the first iteration of the ‘flock’ installation this work is part of, I used Principal Component Analysis to further reduce the 100 variables down to 10. While this does reduce the dimesionality to something managable, it only further obscures the understanding of the encoding that the AE has found.</p>
+<p>An variant of the autoencoder called the variational autoencoder (VAE) could help to establish a better understanding of the encoding.</p>
+<p>A VAE would allow me to generate new swarms by altering the encoding and pushing it through the decoder, allowing me to get a better understanding of what the individual items in the encoding represent.</p>
+</section>
+<section id="varational-autoencoders" class="level2">
+<h2 class="anchored" data-anchor-id="varational-autoencoders">Varational Autoencoders</h2>
+<p>Variational autoencoders were introduced by <span class="citation" data-cites="kingmaAutoEncodingVariationalBayes2014">Kingma and Welling (<a href="#ref-kingmaAutoEncodingVariationalBayes2014" role="doc-biblioref">2014</a>)</span>, and reframe the autoencoding process as a problem of Baysean optimisation.</p>
+<p>VAEs are similar to AEs in that they composed of an encoder and a decoder, and they are trained to minimise the reconstruction error between the original data, and the data after it has been encoded and decoded.</p>
+<p>One of the key ways in which they differ, is that VAEs aim to create a regularised latent space which AEs lack. A regularised latent space means that points in the latent space should be meaninful once decoded. AEs make no attempt to regularise the latent space and so consequently parts of the latent space will be ‘unused’ and therefore <em>meaningless</em> once decoded. Given this regularisation, it means that VAEs are useful as <em>generative</em> processses, as sampling from the latent space will result in <em>new</em> data.</p>
+<p>VAEs acheive this through a combination of factors. Conceptually, the main difference is that the problem is re-formulated through a Baysian lens, utilising variational inference.</p>
+<section id="variational-inference" class="level3">
+<h3 class="anchored" data-anchor-id="variational-inference">Variational Inference</h3>
+<p>Given some data <span class="math inline">\(x\)</span> and a latent representation <span class="math inline">\(z\)</span>, we can see how their joint probabilities are related with Bayes theorem:</p>
+<p><span class="math display">\[p(z|x) = \frac{p(x|z)p(z)}{p(x)}\]</span></p>
+<p>Since the denominator <span class="math inline">\(p(x)\)</span>, otherwise known as the evidence, is an <em>intractable</em> calculation (given non-trival dimentionality), we use <em>variational inference</em> to find an approxmation for <span class="math inline">\(p\)</span>, denoted by <span class="math inline">\(q\)</span>. From some family of distributions (in this case Gassians), denoted by <span class="math inline">\(Q\)</span> we are going to pick some candiate <span class="math inline">\(q \in Q\)</span> which best matches <span class="math inline">\(p\)</span> given some set of parameters <span class="math inline">\(\theta\)</span>. Since we are dealing with Gaussian distributions, those parameters will be the mean and the standard deviation.</p>
+<p>The way in which we measure similarity between distributions is via the Kullback-Leibler (KL) divergence:</p>
+<p><span class="math display">\[KL(q(z)||p(z|x)) = \int q(z) \log\frac{q(z)}{p(z|x)}dz\]</span></p>
+<p>In our case we want to find some candidate <span class="math inline">\(q\)</span> that minimises the KL divergence:</p>
+<p><span class="math display">\[q(z) = argmin\:KL(q(z)||P(z|x))\]</span></p>
+<p>However, this form of the KL divergence still has the same intractability issues as Bayes theorem, since we still can’t estimate <span class="math inline">\(p(z|x)\)</span>.</p>
+<p>If we decompose the KL down to the form: <span class="math display">\[KL(q(z)||p(z|x)) = \mathit{\mathbb{E}}_q[\log q(z) - \log p(x,z)] + \log p(x|z)\]</span></p>
+<p>and rearrange: <span class="math display">\[\mathit{\mathbb{E}}_q[\log p(x,z) - \log q(z)] = \log p(x|z) - KL(q(z)||p(z|x))\]</span></p>
+<p>We have maanged to get the intractable terms on the same side. Now, we can <em>maximise</em> the right hand side (which <em>is</em> tractable) and this will have the consequence of maximising the <span class="math inline">\(p(x)\)</span> term (the evidence) and minimising the DL divergence between <span class="math inline">\(q(z)\)</span> and <span class="math inline">\(p(z|x)\)</span>. Since the KL is non-negative, the left term is a lower-bound over <span class="math inline">\(\log p(x|z)\)</span>, otherwise known is the <em>Evidence Lower BOund</em> (ELBO)</p>
+<p><span class="math display">\[ELBO(q) =\mathit{\mathbb{E}}_q[\log p(x,z) - \log q(z)] = \mathit{\mathbb{E}}_q[\log \frac{p(x,z)}{q(z)}]\]</span></p>
+<p>So we have ended up with a mechanism that will allow us to minimise the KL divergence while avoiding the intractable terms found in the standard formulation.</p>
+</section>
+<section id="practical-changes" class="level3">
+<h3 class="anchored" data-anchor-id="practical-changes">Practical changes</h3>
+<p>Given the reformulation of the problem above, a number of practical changes need to take place.</p>
+<section id="changes-to-the-model" class="level4">
+<h4 class="anchored" data-anchor-id="changes-to-the-model">Changes to the model</h4>
+<p>Rather than a single encoded layer, our encoder and decoder operate probabalistically, and will assume gaussian distributions. This means we will model the latent space as both the mean (<span class="math inline">\(\mu\)</span>) and the variance (<span class="math inline">\(\sigma\)</span>) in order to parameterise our distribution.</p>
+<p>To deal with the unwieldy size of the encoded space (and my avaliable GPU memory) I also reduced the number of agents to 100 and the size of the encoded space to 10. This additionally meant the extra PCA step used previously was no longer necessary.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">create_vae</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  encoder_features <span class="op">=</span> <span class="fu">Chain</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 60x300xb</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Conv</span>((<span class="fl">9</span>,), <span class="fl">300</span> <span class="op">=&gt;</span> <span class="fl">3000</span>, relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">MaxPool</span>((<span class="fl">2</span>,)),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 30x3000xb</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Conv</span>((<span class="fl">5</span>,), <span class="fl">3000</span> <span class="op">=&gt;</span> <span class="fl">1500</span>, relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">MaxPool</span>((<span class="fl">2</span>,)),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 15x1500xb</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Conv</span>((<span class="fl">5</span>,),<span class="fl">1500</span> <span class="op">=&gt;</span> <span class="fl">750</span>, relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 15x750xb</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">MaxPool</span>((<span class="fl">3</span>,)),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Conv</span>((<span class="fl">3</span>,),<span class="fl">750</span> <span class="op">=&gt;</span> <span class="fl">250</span>, relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Conv</span>((<span class="fl">3</span>,),<span class="fl">250</span> <span class="op">=&gt;</span> <span class="fl">25</span>, relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Conv</span>((<span class="fl">3</span>,),<span class="fl">25</span> <span class="op">=&gt;</span> <span class="fl">10</span>, relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 5x10xb</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        Flux.flatten,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Dense</span>(<span class="fl">50</span>,<span class="fl">10</span>,relu)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    encoder_μ    <span class="op">=</span> <span class="fu">Chain</span>(encoder_features, <span class="fu">Dense</span>(<span class="fl">10</span>,<span class="fl">10</span>))</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    encoder_logσ <span class="op">=</span> <span class="fu">Chain</span>(encoder_features, <span class="fu">Dense</span>(<span class="fl">10</span>,<span class="fl">10</span>))</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    decoder <span class="op">=</span> <span class="fu">Chain</span>(</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Dense</span>(<span class="fl">10</span>,<span class="fl">50</span>,relu),</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        (x <span class="op">-&gt;</span> <span class="fu">reshape</span>(x, <span class="fl">5</span>,<span class="fl">10</span>,<span class="op">:</span>)),</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>          <span class="co"># 5x10xb</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ConvTranspose</span>((<span class="fl">3</span>,), <span class="fl">10</span>  <span class="op">=&gt;</span> <span class="fl">25</span>,   relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ConvTranspose</span>((<span class="fl">3</span>,), <span class="fl">25</span>  <span class="op">=&gt;</span> <span class="fl">250</span>,  relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ConvTranspose</span>((<span class="fl">3</span>,), <span class="fl">250</span> <span class="op">=&gt;</span> <span class="fl">750</span>,  relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Upsample</span>((<span class="fl">3</span>,)),</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 15x7500xb</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ConvTranspose</span>((<span class="fl">5</span>,), <span class="fl">750</span> <span class="op">=&gt;</span> <span class="fl">1500</span>, relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Upsample</span>((<span class="fl">2</span>,)),</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 30x1500xb</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ConvTranspose</span>((<span class="fl">5</span>,), <span class="fl">1500</span> <span class="op">=&gt;</span> <span class="fl">3000</span>,relu; pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Upsample</span>((<span class="fl">2</span>,)),</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 60x3000xb</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        <span class="fu">ConvTranspose</span>((<span class="fl">9</span>,), <span class="fl">3000</span> <span class="op">=&gt;</span> <span class="fl">300</span>;       pad <span class="op">=</span> <span class="fu">SamePad</span>()),</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 60x300xb</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> (encoder_μ, encoder_logσ, decoder)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>create_vae (generic function with 1 method)</code></pre>
+</div>
+</div>
+</section>
+<section id="the-loss-function" class="level4">
+<h4 class="anchored" data-anchor-id="the-loss-function">The loss function</h4>
+<p>Below is the reworked loss function. Of note is the fact that we have to sample from the latent space with our <span class="math inline">\(\mu\)</span> and <span class="math inline">\(log\sigma\)</span>. Also it should be noted that the <span class="math inline">\(p(x|z)\)</span> in our definition of the ELBO is in practical terms the reconstruction loss, i.e.&nbsp;the standard autoencoder loss between the input and the reconstructed input.</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">vae_loss</span>(encoder_μ, encoder_logσ, decoder, x)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Forward propagate through mean encoder and std encoders</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    μ    <span class="op">=</span> <span class="fu">encoder_μ</span>(x)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    logσ <span class="op">=</span> <span class="fu">encoder_logσ</span>(x)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sample from the latent space</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> μ <span class="op">+</span> <span class="fu">gpu</span>(<span class="fu">randn</span>(<span class="dt">Float32</span>, <span class="fu">size</span>(logσ))) <span class="op">.*</span> <span class="fu">exp</span>.(logσ)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Reconstruct from latent sample</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    x̂ <span class="op">=</span> <span class="fu">decoder</span>(z)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># this derivation of the KL when dealing with Gassians</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># can be found in the original paper Appendix B</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    kl <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> <span class="fu">sum</span>(@. <span class="fl">1</span> <span class="op">+</span> logσ <span class="op">-</span> μ<span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fu">exp</span>(logσ))</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calc the reconstruction loss </span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    rec <span class="op">=</span> <span class="fu">reconstruction_loss</span>(x̂, x)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rec <span class="op">+</span> kl</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>vae_loss (generic function with 1 method)</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="challenges-in-training" class="level3">
+<h3 class="anchored" data-anchor-id="challenges-in-training">Challenges in training</h3>
+<p>With the changes outlined above, we should have all we need to learn encoding of our flocking data. However, we quickly encountered problems with training, observing the so-called ‘KL vanishing’ problem, whereby the KL divergence term becomes vanishingly small.</p>
+<div id="fig-vanish-kl" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/loss_vs_KL.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Vanishing KL</figcaption><p></p>
+</figure>
+</div>
+<p>See <a href="#fig-vanish-kl">Figure&nbsp;1</a> for an early attempt at training whereby the loss is decreasing, but the KL term vanishes to effectvely zero.</p>
+<p>At the recommendation of a collegue (thanks <a href="https://twitter.com/kieranagibb">Kieran</a>), I started looking at <span class="math inline">\(\beta\)</span>-vae, as first described by <span class="citation" data-cites="higginsBetavaeLearningBasic2017">Higgins et al. (<a href="#ref-higginsBetavaeLearningBasic2017" role="doc-biblioref">2017</a>)</span></p>
+<p>Essentially <span class="math inline">\(\beta\)</span>-vae adds a scaling parameter to the KL term:</p>
+<p><span class="math display">\[\mathit{\mathbb{E}}_q[\log p(x,z) - \log q(z)] = \log p(x|z) - \beta KL(q(z)||p(z|x))\]</span></p>
+<p>Building upon this work, <span class="citation" data-cites="fuCyclicalAnnealingSchedule2019">Fu et al. (<a href="#ref-fuCyclicalAnnealingSchedule2019" role="doc-biblioref">2019</a>)</span> proposed a ‘Cyclical Annealing’ method in which the <span class="math inline">\(\beta\)</span> variable starts at 0, effectively negating the KL regularisation term, and is then slowly increased, before the process starts again and repeats.</p>
+<p>An initial attempt at this processes showed some promise:</p>
+<div id="fig-beta" class="quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/kl.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">KL Divergence</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/beta.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption"><span class="math inline">\(\beta\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: Cyclical Annealing</figcaption><p></p>
+</figure>
+</div>
+<p>However, as can been seen in <a href="#fig-beta">Figure&nbsp;2</a>, the KL did seem to be growing, but as soon as the <span class="math inline">\(\beta\)</span> began increasing the KL crashed back down to effectively nothing. Subsequent cycles of the <span class="math inline">\(\beta\)</span> parameter had no further effect.</p>
+<p>It seemed that acceptable values of <span class="math inline">\(\beta\)</span> would have to be empirically uncovered, which may well be a long process. Thankfully, I discovered the work by <span class="citation" data-cites="rybkinSimpleEffectiveVAE2021">Rybkin, Daniilidis, and Levine (<a href="#ref-rybkinSimpleEffectiveVAE2021" role="doc-biblioref">2021</a>)</span> which eliminates the need for fine tuning the <span class="math inline">\(\beta\)</span> parameter. Their work, known as <span class="math inline">\(\sigma\)</span>-vae uses a single shared variance which is estimated analytically with their algorithm ‘Optimal <span class="math inline">\(\sigma\)</span>-vae’:</p>
+<p><span class="math display">\[ \sigma^{*2} = \frac{arg max}{\sigma^2}\mathcal{N}(x|\mu,\sigma^2,I) = MSE(x,\mu)\]</span></p>
+<p>where <span class="math inline">\(MSE(x,\mu) = \frac{1}{D}\sum(x_i - \mu_i)^2\)</span></p>
+<p>This can be implemented very simply as illustrated by the authors<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>They authors use the gaussian negative-log likelihood loss function which seemed appropriate to my usecase along with a ‘softclip’ operation for restricting the range of the variance as proposed by <span class="citation" data-cites="chuaDeepReinforcementLearning2018">Chua et al. (<a href="#ref-chuaDeepReinforcementLearning2018" role="doc-biblioref">2018</a>)</span>. All these changes combined resulted in the following:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">gaussian_nll</span>(x̂, logσ, x)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> (@. ( (x <span class="op">-</span> x̂) <span class="op">/</span> <span class="fu">exp</span>(logσ))<span class="op">^</span><span class="fl">2</span> <span class="op">+</span> logσ <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="fu">log2</span>(<span class="cn">pi</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">softclip</span>(input, min_val)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> min_val <span class="op">.+</span> NNlib.<span class="fu">softplus</span>(input <span class="op">-</span> min_val)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">reconstruction_loss</span>(x̂, x)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    logσ <span class="op">=</span> <span class="fu">log</span>(<span class="fu">sqrt</span>(<span class="fu">mean</span>((x <span class="op">-</span> x̂)<span class="op">.^</span><span class="fl">2</span>)))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    logσ <span class="op">=</span> <span class="fu">softclip</span>(logσ, <span class="op">-</span><span class="fl">6</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    rec  <span class="op">=</span> <span class="fu">sum</span>(<span class="fu">gaussian_nll</span>(x̂, logσ, x))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rec</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-success" class="quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/train_loss_success.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Training Loss</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/kl_success.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">KL Divergence</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;3: Successful Training</figcaption><p></p>
+</figure>
+</div>
+<p>The above charts have been smoothed to show the general trend. As can be seen the training loss is moving the correct direction, and the KL no longer vanishes to 0!</p>
+
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-chuaDeepReinforcementLearning2018" class="csl-entry" role="doc-biblioentry">
+Chua, Kurtland, Roberto Calandra, Rowan McAllister, and Sergey Levine. 2018. <span>“Deep <span>Reinforcement Learning</span> in a <span>Handful</span> of <span>Trials</span> Using <span>Probabilistic Dynamics Models</span>.”</span> <em>Advances in Neural Information Processing Systems</em> 31. <a href="https://arxiv.org/abs/1805.12114">https://arxiv.org/abs/1805.12114</a>.
+</div>
+<div id="ref-fuCyclicalAnnealingSchedule2019" class="csl-entry" role="doc-biblioentry">
+Fu, Hao, Chunyuan Li, Xiaodong Liu, Jianfeng Gao, Asli Celikyilmaz, and Lawrence Carin. 2019. <span>“Cyclical <span>Annealing Schedule</span>: <span>A Simple Approach</span> to <span>Mitigating KL Vanishing</span>.”</span> <span>arXiv</span>. <a href="http://arxiv.org/abs/1903.10145">http://arxiv.org/abs/1903.10145</a>.
+</div>
+<div id="ref-higginsBetavaeLearningBasic2017" class="csl-entry" role="doc-biblioentry">
+Higgins, Irina, Loic Matthey, Arka Pal, Christopher Burgess, Xavier Glorot, Matthew Botvinick, Shakir Mohamed, and Alexander Lerchner. 2017. <span>“Beta-Vae: <span>Learning</span> Basic Visual Concepts with a Constrained Variational Framework.”</span> In. <a href="https://openreview.net/forum?id=Sy2fzU9gl">https://openreview.net/forum?id=Sy2fzU9gl</a>.
+</div>
+<div id="ref-kingmaAutoEncodingVariationalBayes2014" class="csl-entry" role="doc-biblioentry">
+Kingma, Diederik P., and Max Welling. 2014. <span>“Auto-<span>Encoding Variational Bayes</span>.”</span> <span>arXiv</span>. <a href="http://arxiv.org/abs/1312.6114">http://arxiv.org/abs/1312.6114</a>.
+</div>
+<div id="ref-rybkinSimpleEffectiveVAE2021" class="csl-entry" role="doc-biblioentry">
+Rybkin, Oleh, Kostas Daniilidis, and Sergey Levine. 2021. <span>“Simple and <span>Effective VAE Training</span> with <span>Calibrated Decoders</span>.”</span> <span>arXiv</span>. <a href="http://arxiv.org/abs/2006.13202">http://arxiv.org/abs/2006.13202</a>.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>See their blog <a href="https://orybkin.github.io/sigma-vae/" class="uri">https://orybkin.github.io/sigma-vae/</a> for details<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

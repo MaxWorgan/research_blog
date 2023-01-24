@@ -2,26 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://MaxWorgan.github.io/research_blog/posts/2022-03-15-shared-data.html</loc>
-    <lastmod>2022-11-28T18:19:16.946Z</lastmod>
+    <lastmod>2023-01-24T12:06:11.300Z</lastmod>
   </url>
   <url>
     <loc>https://MaxWorgan.github.io/research_blog/posts/2022-02-06-dcae_part_2.html</loc>
-    <lastmod>2022-11-28T18:19:17.765Z</lastmod>
+    <lastmod>2023-01-24T12:06:12.014Z</lastmod>
   </url>
   <url>
     <loc>https://MaxWorgan.github.io/research_blog/posts/2022-02-28-dimension_reduction.html</loc>
-    <lastmod>2022-11-28T18:19:21.266Z</lastmod>
+    <lastmod>2023-01-24T12:06:14.394Z</lastmod>
   </url>
   <url>
     <loc>https://MaxWorgan.github.io/research_blog/posts/2022-01-14-dcae-part-1.html</loc>
-    <lastmod>2022-11-28T18:19:22.188Z</lastmod>
+    <lastmod>2023-01-24T12:06:15.098Z</lastmod>
+  </url>
+  <url>
+    <loc>https://MaxWorgan.github.io/research_blog/posts/2022-11-28-DCVAE.html</loc>
+    <lastmod>2023-01-24T12:06:16.011Z</lastmod>
   </url>
   <url>
     <loc>https://MaxWorgan.github.io/research_blog/index.html</loc>
-    <lastmod>2022-11-28T18:19:22.533Z</lastmod>
+    <lastmod>2023-01-24T12:06:16.340Z</lastmod>
   </url>
   <url>
     <loc>https://MaxWorgan.github.io/research_blog/about.html</loc>
-    <lastmod>2022-11-28T18:19:22.793Z</lastmod>
+    <lastmod>2023-01-24T12:06:16.608Z</lastmod>
   </url>
 </urlset>

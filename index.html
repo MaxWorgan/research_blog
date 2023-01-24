@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.2.280">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -70,9 +70,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-description","listing-categories"],
+      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -148,7 +148,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Julia">Julia <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Memory">Memory <span class="quarto-category-count">(1)</span></div><div class="category" data-category="OpenFrameworks">OpenFrameworks <span class="quarto-category-count">(1)</span></div><div class="category" data-category="POSIX">POSIX <span class="quarto-category-count">(1)</span></div><div class="category" data-category="auto-encoder">auto-encoder <span class="quarto-category-count">(3)</span></div><div class="category" data-category="dimension reduction">dimension reduction <span class="quarto-category-count">(3)</span></div><div class="category" data-category="swarm">swarm <span class="quarto-category-count">(3)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(5)</span></div><div class="category" data-category="Julia">Julia <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Memory">Memory <span class="quarto-category-count">(1)</span></div><div class="category" data-category="OpenFrameworks">OpenFrameworks <span class="quarto-category-count">(1)</span></div><div class="category" data-category="POSIX">POSIX <span class="quarto-category-count">(1)</span></div><div class="category" data-category="auto-encoder">auto-encoder <span class="quarto-category-count">(3)</span></div><div class="category" data-category="dimension reduction">dimension reduction <span class="quarto-category-count">(4)</span></div><div class="category" data-category="swarm">swarm <span class="quarto-category-count">(4)</span></div><div class="category" data-category="variational auto-encoder">variational auto-encoder <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
 
@@ -161,7 +161,55 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="Julia,OpenFrameworks,Memory,POSIX" data-listing-date-sort="1647302400000" data-listing-file-modified-sort="1669659526792" data-listing-reading-time-sort="3.71">
+<div class="quarto-post image-right" data-index="0" data-categories="dimension reduction,variational auto-encoder,swarm" data-listing-date-sort="1668729600000" data-listing-file-modified-sort="1674561499611" data-listing-reading-time-sort="8.715">
+<div class="thumbnail">
+<p><a href="./posts/2022-11-28-DCVAE.html"> <img src="./posts/images/loss_vs_KL.png" class="thumnail-image"> </a></p>
+</div>
+<div class="body">
+<a href="./posts/2022-11-28-DCVAE.html">
+<h3 class="no-anchor listing-title">
+Deep Convolutional Variational Auto Encoders
+</h3>
+<div class="listing-subtitle">
+
+</div>
+</a>
+<div class="listing-categories">
+<div class="listing-category" onclick="window.quartoListingCategory('dimension reduction'); return false;">
+dimension reduction
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('variational auto-encoder'); return false;">
+variational auto-encoder
+</div>
+<div class="listing-category" onclick="window.quartoListingCategory('swarm'); return false;">
+swarm
+</div>
+</div>
+<a href="./posts/2022-11-28-DCVAE.html">
+<div class="listing-description">
+<p>Adapting the autoencoder to use variational inference</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="./posts/2022-11-28-DCVAE.html">
+<div class="listing-date">
+Nov 18, 2022
+</div>
+<div class="listing-author">
+Max Worgan
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-categories="Julia,OpenFrameworks,Memory,POSIX" data-listing-date-sort="1647302400000" data-listing-file-modified-sort="1669659526000" data-listing-reading-time-sort="3.71">
+<div class="thumbnail">
+<a href="./posts/2022-03-15-shared-data.html">
+<div class="thumbnail-image">
+
+</div>
+</a><p><a href="./posts/2022-03-15-shared-data.html"></a></p>
+</div>
 <div class="body">
 <a href="./posts/2022-03-15-shared-data.html">
 <h3 class="no-anchor listing-title">
@@ -202,7 +250,14 @@ Max Worgan
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="1" data-categories="dimension reduction,auto-encoder,swarm" data-listing-date-sort="1646006400000" data-listing-file-modified-sort="1669658624862" data-listing-reading-time-sort="1.48">
+<div class="quarto-post image-right" data-index="2" data-categories="dimension reduction,auto-encoder,swarm" data-listing-date-sort="1646006400000" data-listing-file-modified-sort="1669658624000" data-listing-reading-time-sort="1.48">
+<div class="thumbnail">
+<a href="./posts/2022-02-28-dimension_reduction.html">
+<div class="thumbnail-image">
+
+</div>
+</a><p><a href="./posts/2022-02-28-dimension_reduction.html"></a></p>
+</div>
 <div class="body">
 <a href="./posts/2022-02-28-dimension_reduction.html">
 <h3 class="no-anchor listing-title">
@@ -240,7 +295,14 @@ Max Worgan
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="2" data-categories="dimension reduction,auto-encoder,swarm" data-listing-date-sort="1644105600000" data-listing-file-modified-sort="1669658624741" data-listing-reading-time-sort="1.545">
+<div class="quarto-post image-right" data-index="3" data-categories="dimension reduction,auto-encoder,swarm" data-listing-date-sort="1644105600000" data-listing-file-modified-sort="1669658624000" data-listing-reading-time-sort="1.545">
+<div class="thumbnail">
+<a href="./posts/2022-02-06-dcae_part_2.html">
+<div class="thumbnail-image">
+
+</div>
+</a><p><a href="./posts/2022-02-06-dcae_part_2.html"></a></p>
+</div>
 <div class="body">
 <a href="./posts/2022-02-06-dcae_part_2.html">
 <h3 class="no-anchor listing-title">
@@ -278,7 +340,14 @@ Max Worgan
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="3" data-categories="dimension reduction,auto-encoder,swarm" data-listing-date-sort="1642118400000" data-listing-file-modified-sort="1669658624727" data-listing-reading-time-sort="1.555">
+<div class="quarto-post image-right" data-index="4" data-categories="dimension reduction,auto-encoder,swarm" data-listing-date-sort="1642118400000" data-listing-file-modified-sort="1669658624000" data-listing-reading-time-sort="1.555">
+<div class="thumbnail">
+<a href="./posts/2022-01-14-dcae-part-1.html">
+<div class="thumbnail-image">
+
+</div>
+</a><p><a href="./posts/2022-01-14-dcae-part-1.html"></a></p>
+</div>
 <div class="body">
 <a href="./posts/2022-01-14-dcae-part-1.html">
 <h3 class="no-anchor listing-title">
